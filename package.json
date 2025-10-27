@@ -1,0 +1,32 @@
+{
+  "name": "sistema-personalizado-casa-anzai",
+  "version": "1.0.0",
+  "description": "Dedicado apenas ao sistema de automação de setores da Casa Anzai",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PSJoao/Sistema-Personalizado-Casa-Anzai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PSJoao/Sistema-Personalizado-Casa-Anzai/issues"
+  },
+  "homepage": "https://github.com/PSJoao/Sistema-Personalizado-Casa-Anzai#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-handlebars": "^8.0.3",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

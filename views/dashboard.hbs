@@ -1,0 +1,21 @@
+{{#if user}}
+    <h1>Bem-vindo, {{user.username}}!</h1>
+    
+    <p>Você está logado no sistema da Casa Anzai.</p>
+    <p>Seu cargo é: <strong>{{user.role}}</strong></p>
+
+    <br>
+    
+    {{!-- Este link aponta para a rota de logout que criámos --}}
+    <a href="/auth/logout" style="font-weight: bold; color: crimson;">
+        Sair (Logout)
+    </a>
+
+{{else}}
+    {{!-- Isso não deve acontecer se o 'protectRoute' estiver a funcionar,
+         mas é uma boa prática ter um fallback. --}}
+    <h1>Erro</h1>
+    <p>Não foi possível carregar os dados do utilizador.</p>
+    <a href="/auth/login">Voltar para o Login</a>
+{{/if}}
+
