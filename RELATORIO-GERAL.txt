@@ -1,27 +1,17 @@
-Configurei o ambiente Node.js, instalando as dependências-chave como express, express-handlebars, pg, jsonwebtoken, bcryptjs e cookie-parser.
+Script autónomo (create-admin.js) para criação do primeiro utilizador administrador inserido.
 
-Criei o arquivo .env na raíz para armazenar de forma segura as credenciais do banco de dados e o segredo (JWT_SECRET) para assinar os tokens.
+Middleware de autorização (checkRole) para restringir o acesso a rotas com base no cargo (ex: 'admin') implementado.
 
-Escrevi o script SQL (init_db.sql) que cria as tabelas users (com um ENUM para os cargos 'admin' e 'funcionario') e a tabela system_logs.
+Rotas do painel de administração (/admin/users) definidas e protegidas para acesso exclusivo de administradores.
 
-Centralizei a conexão com o PostgreSQL no arquivo config/database.js, utilizando um "pool" de conexões para otimizar o acesso ao banco.
+Sistema de CRUD (Criar, Ler, Atualizar, Eliminar) para gestão de utilizadores implementado (Controller, Service e Model).
 
-Montei o app.js como o servidor principal, configurando o Express, o Handlebars (com a extensão .hbs e helpers) e definindo middlewares globais.
+Páginas de visualização (Views) para listar todos os utilizadores e formulário para criar/editar utilizadores adicionadas.
 
-Criei os arquivos de view essenciais: o layout principal (views/layouts/main.hbs), a página de login (views/login.hbs) e o dashboard (views/dashboard.hbs).
+Helpers do Handlebars (eq, neq, lookup) para lógica condicional nas views adicionados.
 
-Defini o models/User.js como a camada de dados, responsável exclusivamente por buscar e inserir utilizadores no banco de dados.
+Link para "Gerir Utilizadores" adicionado ao dashboard, visível apenas para administradores.
 
-Implementei o services/AuthService.js como o "cérebro" da autenticação, responsável por validar senhas com bcrypt e gerar os tokens JWT.
+Correção de segurança aplicada para impedir que um administrador edite ou elimine o seu próprio perfil no painel de gestão.
 
-Criei o controllers/AuthController.js para ser o "maestro", recebendo as requisições HTTP, chamando o serviço e decidindo o que responder.
-
-Organizei as URLs de autenticação (/auth/login, /auth/logout) no arquivo routes/authRoutes.js e o registei devidamente no app.js.
-
-Desenvolvi o middleware/authMiddleware.js, que contém a função protectRoute para verificar a validade do JWT em cada requisição protegida.
-
-Apliquei o protectRoute ao dashboard e à rota de logout, garantindo que apenas utilizadores autenticados possam aceder a essas áreas.
-
-Assegurei que o token JWT seja armazenado num cookie httpOnly, aumentando a segurança contra ataques XSS.
-
-Finalizei o ciclo de autenticação implementando a lógica de logout, que limpa o cookie de autenticação e redireciona o utilizador de volta à página de login.
+Correção de dados aplicada para exibir corretamente o status "Ativo" (Sim/Não) na lista de utilizadores, corrigindo valores NULL no banco de dados.
