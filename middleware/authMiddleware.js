@@ -43,8 +43,42 @@ function protectRoute(req, res, next) {
   }
 }
 
+/**
+ * Middleware para verificar o cargo (role) do utilizador.
+ * Este middleware DEVE ser usado DEPOIS do 'protectRoute',
+ * pois ele depende de 'req.user' (que o protectRoute anexa).
+ * * @param {Array<string>} allowedRoles - Um array de roles permitidas (ex: ['admin'])
+ */
+function checkRole(allowedRoles) {
+  return (req, res, next) => {
+    // 1. protectRoute já foi executado, então temos req.user
+    if (!req.user || !req.user.role) {
+      console.warn('[CheckRole] req.user ou req.user.role não definidos.');
+      return res.redirect('/dashboard'); // Ou página de erro 403
+    }
+
+    // 2. Verifica se o cargo do utilizador está na lista de cargos permitidos
+    const isAllowed = allowedRoles.includes(req.user.role);
+
+    if (isAllowed) {
+      // O utilizador tem permissão, continua para a rota
+      next();
+    } else {
+      // O utilizador está logado, mas não tem permissão
+      console.warn(`[CheckRole] Acesso negado para o utilizador ${req.user.username} (Role: ${req.user.role}) na rota ${req.originalUrl}`);
+      
+      // (Futuramente) Poderíamos renderizar uma página "Acesso Negado"
+      // res.status(403).render('access-denied');
+      
+      // Por agora, redireciona para o dashboard
+      // (Podemos adicionar uma mensagem de erro flash no futuro)
+      return res.redirect('/dashboard');
+    }
+  };
+}
+
 // Exportamos a função de middleware
 module.exports = {
   protectRoute,
-  // (Aqui também adicionaremos a função 'checkRole' para Admin/Funcionário no futuro)
+  checkRole
 };

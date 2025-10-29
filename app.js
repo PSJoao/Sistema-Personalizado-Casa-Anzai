@@ -35,10 +35,11 @@ app.set('views', path.join(__dirname, 'views'));
 
 // --- 5. Definição de Rotas ---
 
-// Importa as rotas de autenticação
 const authRoutes = require('./routes/authRoutes');
-// Define que qualquer rota começando com /auth será gerenciada pelo authRoutes
 app.use('/auth', authRoutes);
+
+const userRoutes = require('./routes/userRoutes');
+app.use('/admin/users', userRoutes);
 
 
 // --- Rota Raiz (Redireciona para o login) ---

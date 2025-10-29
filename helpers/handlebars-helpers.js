@@ -1,19 +1,9 @@
 const helpers = {
+    eq: (v1, v2) => v1 === v2,
 
-    /**
-     * Exemplo de um helper que poderíamos adicionar no futuro:
-     * * formatarData: (date) => {
-     * if (!date) return '';
-     * return new Date(date).toLocaleDateString('pt-BR', {
-     * day: '2-digit',
-     * month: '2-digit',
-     * year: 'numeric'
-     * });
-     * },
-     * * json: (context) => {
-     * return JSON.stringify(context);
-     * }
-     */
+    neq: (v1, v2) => v1 !== v2,
+
+    lookup: (obj, field) => obj && obj[field],
 };
 
 module.exports = helpers;

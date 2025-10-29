@@ -1,0 +1,52 @@
+{{! views/admin/user-form.hbs }}
+<h1>{{formTitle}}</h1>
+
+<form action="{{formAction}}" method="POST">
+    
+    {{! Bloco de Erro, se houver }}
+    {{#if error}}
+        <div style="padding: 10px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 15px;">
+            {{error}}
+        </div>
+    {{/if}}
+
+    <div style="margin-bottom: 15px;">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" 
+               value="{{#if userToEdit}}{{userToEdit.username}}{{else}}{{username}}{{/if}}" 
+               required>
+    </div>
+
+    {{! Só pedimos senha se for CRIAÇÃO (isEditing = false) }}
+    {{#unless isEditing}}
+        <div style="margin-bottom: 15px;">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+    {{else}}
+        <p style="font-style: italic; color: #555;">(A alteração de senha deve ser feita por um fluxo de "Reset de Senha".)</p>
+    {{/unless}}
+
+    <div style="margin-bottom: 15px;">
+        <label for="role">Cargo (Role):</label>
+        <select id="role" name="role" required>
+            {{! Seleciona o cargo correto no modo de edição }}
+            <option value="funcionario" {{#if (eq userToEdit.role "funcionario")}}selected{{/if}}>Funcionário</option>
+            <option value="admin" {{#if (eq userToEdit.role "admin")}}selected{{/if}}>Admin</option>
+        </select>
+    </div>
+
+    {{! O 'is_active' só aparece no modo de edição }}
+    {{#if isEditing}}
+    <div style="margin-bottom: 15px;">
+        <label for="is_active">
+            <input type="checkbox" id="is_active" name="is_active" 
+                   {{#if userToEdit.is_active}}checked{{/if}}>
+            Utilizador Ativo
+        </label>
+    </div>
+    {{/if}}
+    
+    <button type="submit">Salvar</button>
+    <a href="/admin/users">Cancelar</a>
+</form>

@@ -34,7 +34,7 @@ const User = {
     async findById(id) {
         try {
             const query = {
-                text: 'SELECT id, username, role, created_at FROM users WHERE id = $1',
+                text: 'SELECT id, username, role, is_active, created_at FROM users WHERE id = $1',
                 values: [id],
             };
             const { rows } = await db.query(query.text, query.values);
@@ -80,6 +80,94 @@ const User = {
                 throw new Error('Nome de usuário já existe.');
             }
             console.error('Erro ao criar usuário:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Busca TODOS os utilizadores do banco.
+     * @returns {Promise<Array<object>>} Uma lista de utilizadores (sem senha).
+     */
+    async findAll() {
+        try {
+            const query = {
+                text: `
+                    SELECT id, username, role, is_active, created_at, updated_at 
+                    FROM users
+                    ORDER BY username
+                `,
+            };
+            const { rows } = await db.query(query.text);
+            return rows;
+        } catch (error) {
+            console.error('Erro ao buscar todos os utilizadores:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Atualiza os dados de um utilizador no banco.
+     * @param {number} id - O ID do utilizador a ser atualizado.
+     * @param {object} details - Objeto com os campos a atualizar (username, role, is_active).
+     * @returns {Promise<object>} O utilizador atualizado.
+     */
+    async update(id, { username, role, is_active }) {
+        try {
+            const query = {
+                text: `
+                    UPDATE users
+                    SET username = $1, role = $2, is_active = $3
+                    WHERE id = $4
+                    RETURNING id, username, role, is_active
+                `,
+                values: [username, role, is_active, id],
+            };
+            
+            const { rows } = await db.query(query.text, query.values);
+            
+            if (rows.length === 0) {
+                throw new Error('Utilizador não encontrado para atualização.');
+            }
+            return rows[0];
+        } catch (error) {
+            // Trata erros de 'unique constraint' (utilizador já existe)
+            if (error.code === '23505') {
+                throw new Error('Nome de utilizador já existe.');
+            }
+            console.error('Erro ao atualizar utilizador:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Elimina um utilizador do banco de dados.
+     * @param {number} id - O ID do utilizador a ser eliminado.
+     * @returns {Promise<object>} O utilizador que foi eliminado.
+     */
+    async deleteById(id) {
+         try {
+            // (Nota: Em sistemas reais, podemos preferir 'is_active = false' 
+            // em vez de DELETE para manter o histórico de logs)
+            const query = {
+                text: `
+                    DELETE FROM users 
+                    WHERE id = $1
+                    RETURNING id, username
+                `,
+                values: [id],
+            };
+            const { rows } = await db.query(query.text, query.values);
+            
+            if (rows.length === 0) {
+                throw new Error('Utilizador não encontrado para eliminação.');
+            }
+            return rows[0];
+        } catch (error) {
+            console.error('Erro ao eliminar utilizador:', error);
+            // (Verificar restrições de chave estrangeira, ex: logs)
+            if (error.code === '23503') {
+                 throw new Error('Não é possível eliminar este utilizador pois ele possui logs associados.');
+            }
             throw error;
         }
     }

@@ -5,6 +5,18 @@
     <p>Seu cargo é: <strong>{{user.role}}</strong></p>
 
     <br>
+
+    {{#if (eq user.role "admin")}}
+        <div style="padding: 15px; border: 2px solid #007bff; background: #f8f9fa; margin-bottom: 20px;">
+            <h3 style="margin-top: 0;">Painel de Administração</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+                <li>
+                    <a href="/admin/users"><strong>Gerir Utilizadores</strong></a>
+                </li>
+                {{! (Futuros links admin aqui) }}
+            </ul>
+        </div>
+    {{/if}}
     
     {{!-- Este link aponta para a rota de logout que criámos --}}
     <a href="/auth/logout" style="font-weight: bold; color: crimson;">
