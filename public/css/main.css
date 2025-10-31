@@ -206,13 +206,16 @@ a:hover {
     transform: scaleX(1);
 }
 
-/* Botão do Menu Mobile (Hamburger) */
+/* Botão do Menu Mobile*/
 .mobile-menu-toggle {
     background: none;
     border: none;
     cursor: pointer;
+    top: 20px;
+    right: 20px;
     display: block; /* Visível em mobile */
-    z-index: 1100;
+    z-index: 1100; /* <- (1100) MAIS ALTO que o menu (1050) */
+    position: fixed;
 }
 
 .mobile-menu-toggle .icon-bar {
@@ -231,13 +234,13 @@ a:hover {
     left: 0;
     width: 100%;
     height: 100vh;
-    background: var(--surface-color);
+    background-color: rgba(255, 255, 255, 0.65); /* Branco com 85% de opacidade */
+    backdrop-filter: blur(10px); /* Efeito "vidro fosco" */
     
     display: flex;
     justify-content: center;
     align-items: center;
     
-    /* Escondido por padrão */
     opacity: 0;
     visibility: hidden;
     transform: translateX(-100%);
