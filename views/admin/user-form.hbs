@@ -1,52 +1,58 @@
-{{! views/admin/user-form.hbs }}
-<h1>{{formTitle}}</h1>
-
-<form action="{{formAction}}" method="POST">
+<div class="form-card-container">
     
-    {{! Bloco de Erro, se houver }}
-    {{#if error}}
-        <div style="padding: 10px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 15px;">
-            {{error}}
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">{{formTitle}}</h1>
         </div>
-    {{/if}}
 
-    <div style="margin-bottom: 15px;">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" 
-               value="{{#if userToEdit}}{{userToEdit.username}}{{else}}{{username}}{{/if}}" 
-               required>
-    </div>
+        <div class="card-body">
+            <form action="{{formAction}}" method="POST">
+                
+                {{#if error}}
+                    <div class="form-error">
+                        {{error}}
+                    </div>
+                {{/if}}
 
-    {{! Só pedimos senha se for CRIAÇÃO (isEditing = false) }}
-    {{#unless isEditing}}
-        <div style="margin-bottom: 15px;">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" class="form-control"
+                           value="{{#if userToEdit}}{{userToEdit.username}}{{else}}{{username}}{{/if}}" 
+                           required>
+                </div>
+
+                {{#unless isEditing}}
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" class="form-control" required>
+                    </div>
+                {{else}}
+                    <p><em>(A alteração de senha deve ser feita por um fluxo de "Reset de Senha".)</em></p>
+                {{/unless}}
+
+                <div class="form-group">
+                    <label for="role">Cargo (Role):</label>
+                    <select id="role" name="role" class="form-control" required>
+                        <option value="funcionario" {{#if (eq userToEdit.role "funcionario")}}selected{{/if}}>Funcionário</option>
+                        <option value="admin" {{#if (eq userToEdit.role "admin")}}selected{{/if}}>Admin</option>
+                    </select>
+                </div>
+
+                {{#if isEditing}}
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" id="is_active" name="is_active" class="form-check-input"
+                                   {{#if userToEdit.is_active}}checked{{/if}}>
+                            <label for="is_active" class="form-check-label">Utilizador Ativo</label>
+                        </div>
+                    </div>
+                {{/if}}
+                
+                <div class="form-footer">
+                    <a href="/admin/users" class="btn btn-outline">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
         </div>
-    {{else}}
-        <p style="font-style: italic; color: #555;">(A alteração de senha deve ser feita por um fluxo de "Reset de Senha".)</p>
-    {{/unless}}
-
-    <div style="margin-bottom: 15px;">
-        <label for="role">Cargo (Role):</label>
-        <select id="role" name="role" required>
-            {{! Seleciona o cargo correto no modo de edição }}
-            <option value="funcionario" {{#if (eq userToEdit.role "funcionario")}}selected{{/if}}>Funcionário</option>
-            <option value="admin" {{#if (eq userToEdit.role "admin")}}selected{{/if}}>Admin</option>
-        </select>
     </div>
-
-    {{! O 'is_active' só aparece no modo de edição }}
-    {{#if isEditing}}
-    <div style="margin-bottom: 15px;">
-        <label for="is_active">
-            <input type="checkbox" id="is_active" name="is_active" 
-                   {{#if userToEdit.is_active}}checked{{/if}}>
-            Utilizador Ativo
-        </label>
-    </div>
-    {{/if}}
-    
-    <button type="submit">Salvar</button>
-    <a href="/admin/users">Cancelar</a>
-</form>
+</div>

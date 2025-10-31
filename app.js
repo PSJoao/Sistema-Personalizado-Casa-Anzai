@@ -57,7 +57,8 @@ app.get('/dashboard', protectRoute, (req, res) => {
     // 'req.user' foi adicionado pelo middleware protectRoute
     // Agora podemos passar o nome de usuário, cargo, etc., para a view.
     res.render('dashboard', {
-        user: req.user // Passa os dados do usuário (payload do JWT) para o .hbs
+        user: req.user,
+        activePage: 'dashboard' // Passa os dados do usuário (payload do JWT) para o .hbs
     });
 });
 

@@ -1,33 +1,65 @@
 {{#if user}}
-    <h1>Bem-vindo, {{user.username}}!</h1>
-    
-    <p>Você está logado no sistema da Casa Anzai.</p>
-    <p>Seu cargo é: <strong>{{user.role}}</strong></p>
+    <div class="dashboard-header">
+        <h1>Bem-vindo, {{user.username}}!</h1>
+    </div>
+
+    <div class="card-grid">
+        
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Pedidos Em Espera</div>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Pedidos Para Coleta</div>
+            </div>
+        </div>
+
+    </div>
 
     <br>
-
+    
     {{#if (eq user.role "admin")}}
-        <div style="padding: 15px; border: 2px solid #007bff; background: #f8f9fa; margin-bottom: 20px;">
-            <h3 style="margin-top: 0;">Painel de Administração</h3>
-            <ul style="margin: 0; padding-left: 20px;">
-                <li>
-                    <a href="/admin/users"><strong>Gerir Utilizadores</strong></a>
-                </li>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Painel de Administração</h3>
+            </div>
+            <div class="card-body">
+                <p>Ações restritas para administradores do sistema.</p>
+                <a href="/admin/users" class="btn btn-primary">Gerir Utilizadores</a>
                 {{! (Futuros links admin aqui) }}
-            </ul>
+            </div>
         </div>
     {{/if}}
-    
-    {{!-- Este link aponta para a rota de logout que criámos --}}
-    <a href="/auth/logout" style="font-weight: bold; color: crimson;">
-        Sair (Logout)
-    </a>
+
+    <div class="card" style="margin-top: 1rem;">
+        <div class="card-header">
+            <h3 class="card-title">Painel de Sistemas</h3>
+        </div>
+        <div class="card-body">
+            <p>Acesso aos sistemas internos.</p>
+            <a href="/coleta" class="btn btn-primary">Coletor de Produtos</a>
+        </div>
+    </div>
+
+    <div style="margin-top: 2rem; text-align: center;">
+        <a href="/auth/logout" class="btn btn-danger">
+            Sair (Logout)
+        </a>
+    </div>
 
 {{else}}
-    {{!-- Isso não deve acontecer se o 'protectRoute' estiver a funcionar,
-         mas é uma boa prática ter um fallback. --}}
-    <h1>Erro</h1>
-    <p>Não foi possível carregar os dados do utilizador.</p>
-    <a href="/auth/login">Voltar para o Login</a>
+    <div class="card">
+        <div class="card-body">
+            <div class="form-error">
+                <strong>Erro</strong>
+                <p>Não foi possível carregar os dados do utilizador.</p>
+            </div>
+            <a href="/auth/login" class="btn btn-primary">Voltar para o Login</a>
+        </div>
+    </div>
 {{/if}}
-

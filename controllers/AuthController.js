@@ -13,7 +13,9 @@ const renderLoginPage = (req, res) => {
         return res.redirect('/dashboard');
     }
     // Se não houver cookie, mostra a página de login.
-    res.render('login');
+    res.render('login', {
+        layout: 'public'
+    });
 };
 
 /**
@@ -65,15 +67,9 @@ const handleLogout = (req, res) => {
 };
 
 
-// (Futuramente)
-// const renderRegisterPage = (req, res) => { /* ... */ };
-// const handleRegister = (req, res) => { /* ... */ };
-
 module.exports = {
     renderLoginPage,
     handleLogin,
     handleLogout
-    // renderRegisterPage,
-    // handleRegister
 };
 

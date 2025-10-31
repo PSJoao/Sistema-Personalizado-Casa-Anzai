@@ -4,35 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema - Casa Anzai</title>
-    
-    <!-- 
-      Futuramente, podemos adicionar nossos links de CSS aqui, 
-      que virão da pasta /public/styles/ 
-    -->
-    <!-- <link rel="stylesheet" href="/styles/main.css"> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!--CSS Main-->
+    <link rel="stylesheet" href="/css/main.css">
+    <!--CSS Main-->
 </head>
 <body>
+    <header class="main-header">
+        <div class="logo-container">
+            <img src="/images/logo-anzai-desktop.png" alt="Logo Casa Anzai" class="logo">
+        </div>
 
-    <header>
-        <!-- (Podemos adicionar um menu/navbar básico aqui depois) -->
+        <nav class="main-nav">
+            <ul>
+                <li><a href="/dashboard" class="{{#if (eq activePage 'dashboard')}}active{{/if}}">Dashboard</a></li>
+                
+                <li><a href="/pedidos" class="{{#if (eq activePage 'pedidos')}}active{{/if}}">Pedidos</a></li>
+
+                {{#if (eq user.role "admin")}}
+                    <li><a href="/admin/users" class="{{#if (eq activePage 'users')}}active{{/if}}">Utilizadores</a></li>
+                {{/if}}
+            </ul>
+        </nav>
+
+        <button class="mobile-menu-toggle" aria-label="Abrir Menu">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
     </header>
 
-    <main class="container">
-        <!-- 
-          O Handlebars injetará o conteúdo da view (ex: home.hbs, login.hbs) 
-          exatamente aqui onde o {{{body}}} está. 
-        -->
+    <nav class="mobile-nav">
+        <ul>
+            <li><a href="/dashboard" class="{{#if (eq activePage 'dashboard')}}active{{/if}}">Dashboard</a></li>
+            <li><a href="/pedidos" class="{{#if (eq activePage 'pedidos')}}active{{/if}}">Pedidos</a></li>
+            
+            {{#if (eq user.role "admin")}}
+                <li><a href="/admin/users" class="{{#if (eq activePage 'users')}}active{{/if}}">Utilizadores</a></li>
+            {{/if}}
+            
+            <li><a href="/auth/logout">Sair</a></li>
+        </ul>
+    </nav>
+
+
+    <main class="main-content">
         {{{body}}}
     </main>
-
-    <footer>
-        <!-- (Rodapé) -->
-    </footer>
-
-    <!-- 
-      Futuramente, podemos adicionar nossos scripts JS aqui,
-      que virão da pasta /public/scripts/
-    -->
-    <!-- <script src="/scripts/main.js"></script> -->
+    <script src="/scripts/main.js"></script>
 </body>
 </html>

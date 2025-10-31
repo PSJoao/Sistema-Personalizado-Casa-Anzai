@@ -1,0 +1,879 @@
+/* ================================================================
+  FILE: /public/css/base/_variables.css
+  Descrição: Define todas as "variáveis" de design (cores,
+  fontes, sombras, etc.) para fácil manutenção.
+================================================================
+*/
+:root {
+    /* Paleta de Cores */
+    --primary-color: #3457D5;   
+    --primary-dark: #2a48b8;     
+    --primary-light: #eBF0FF;   
+
+    --secondary-color: #E53935; 
+    --secondary-dark: #C62828;   
+
+    /* Neutros */
+    --text-primary: #1F2937;     
+    --text-secondary: #4B5563;   
+    --border-color: #E5E7EB;    
+    --bg-color: #F3F4F6;         
+    --surface-color: #FFFFFF;    
+
+    /* Feedback */
+    --success-color: #10B981;    
+    --warning-color: #F59E0B;   
+    --error-color: var(--secondary-color); 
+
+    /* Tipografia */
+    --font-family: 'Nunito', sans-serif;
+
+    /* Medidas */
+    --header-height: 70px;
+    --border-radius-sm: 4px;
+    --border-radius: 8px;
+    --border-radius-lg: 16px;
+
+    /* Sombras (Shadows) */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Transições */
+    --transition-fast: all 0.2s ease-in-out;
+    --transition-base: all 0.3s ease-in-out;
+}
+
+
+/* ================================================================
+  FILE: /public/css/base/_reset.css
+  Descrição: Normaliza os estilos padrões do navegador.
+================================================================
+*/
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font: inherit;
+}
+
+img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+
+/* ================================================================
+  FILE: /public/css/base/_base.css
+  Descrição: Estilos globais (tags HTML, tipografia).
+================================================================
+*/
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.25rem; }
+p { margin-bottom: 1rem; color: var(--text-secondary); }
+
+a {
+    color: var(--primary-color);
+    font-weight: 600;
+    transition: var(--transition-fast);
+}
+
+a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* O 'body' do Handlebars é o nosso container principal */
+.main-content {
+    padding: 1.5rem;
+    /* Adiciona padding para compensar o header fixo */
+    padding-top: calc(var(--header-height) + 1.5rem);
+}
+
+/* Container de layout */
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+
+/* ================================================================
+  FILE: /public/css/components/_header.css
+  Descrição: Estilos do Header/Navegação (Mobile e Desktop).
+================================================================
+*/
+.main-header {
+    height: var(--header-height);
+    width: 100%;
+    background-color: var(--surface-color);
+    box-shadow: var(--shadow-md);
+    padding: 0 1.5rem;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    /* Fixo no topo */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-container img {
+    height: 45px; /* Ajuste a altura do logo */
+}
+
+/* Navegação Desktop */
+.main-nav {
+    display: none; /* Escondido em mobile */
+}
+
+.main-nav ul {
+    display: flex;
+    gap: 2rem;
+}
+
+.main-nav a {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-decoration: none;
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+/* Linha azul sublinhada */
+.main-nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--primary-color);
+    transform: scaleX(0);
+    transition: var(--transition-fast);
+    transform-origin: left;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+    color: var(--primary-color);
+}
+
+.main-nav a:hover::after,
+.main-nav a.active::after {
+    transform: scaleX(1);
+}
+
+/* Botão do Menu Mobile (Hamburger) */
+.mobile-menu-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: block; /* Visível em mobile */
+    z-index: 1100;
+}
+
+.mobile-menu-toggle .icon-bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-primary);
+    margin: 5px 0;
+    transition: var(--transition-base);
+}
+
+/* Navegação Mobile (Overlay) */
+.mobile-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--surface-color);
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Escondido por padrão */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition: var(--transition-base);
+    z-index: 1050;
+}
+
+.mobile-nav.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+.mobile-nav ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.mobile-nav a {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.mobile-nav a.active,
+.mobile-nav a:hover {
+    color: var(--primary-color);
+}
+
+/* Animação do Hamburger para 'X' */
+.mobile-menu-toggle.open .icon-bar:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 6px);
+}
+.mobile-menu-toggle.open .icon-bar:nth-child(2) {
+    opacity: 0;
+}
+.mobile-menu-toggle.open .icon-bar:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -6px);
+}
+
+/* Media Query para mostrar nav desktop e esconder mobile */
+@media (min-width: 768px) {
+    .main-nav {
+        display: block;
+    }
+    .mobile-menu-toggle {
+        display: none;
+    }
+}
+
+
+/* ================================================================
+  FILE: /public/css/components/_buttons.css
+  Descrição: Estilos para todos os botões.
+================================================================
+*/
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn:hover {
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Botão Primário (Azul) */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #FFF;
+}
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    color: #FFF;
+}
+
+/* Botão de Perigo (Vermelho) */
+.btn-danger {
+    background-color: var(--secondary-color);
+    color: #FFF;
+}
+.btn-danger:hover {
+    background-color: var(--secondary-dark);
+    color: #FFF;
+}
+
+/* Botão de Sucesso (Verde) */
+.btn-success {
+    background-color: var(--success-color);
+    color: #FFF;
+}
+.btn-success:hover {
+    background-color: darken(var(--success-color), 10%);
+    color: #FFF;
+}
+
+/* Botão Secundário (Contorno) */
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+.btn-outline:hover {
+    background-color: var(--primary-color);
+    color: #FFF;
+}
+
+/* Botão de Texto (Link) */
+.btn-link {
+    background: none;
+    color: var(--primary-color);
+    padding: 0;
+}
+.btn-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* ================================================================
+  FILE: /public/css/components/_forms.css
+  Descrição: Estilos para formulários, inputs, selects, etc.
+================================================================
+*/
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+/* Inputs, Textarea, Select */
+.form-control {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--surface-color);
+    transition: var(--transition-fast);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    /* Sombra de foco azul */
+    box-shadow: 0 0 0 3px rgba(52, 87, 213, 0.2);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Checkbox e Radio */
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-check-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.form-check-input {
+    height: 1.25em;
+    width: 1.25em;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    accent-color: var(--primary-color); /* Estiliza o 'check' */
+}
+
+input[type="checkbox"].form-check-input {
+    border-radius: var(--border-radius-sm);
+}
+input[type="radio"].form-check-input {
+    border-radius: 50%;
+}
+
+
+/* Filtros e Pesquisa */
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap; /* Para responsividade */
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+}
+
+/* Campo de Pesquisa com Ícone */
+.form-search {
+    position: relative;
+    flex-grow: 1; /* Ocupa espaço disponível */
+    min-width: 250px;
+}
+
+.form-search .form-control {
+    padding-left: 2.75rem;
+}
+
+.form-search .search-icon {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none; /* Permite clicar no input */
+}
+
+/* Container de Erro */
+.form-error {
+    padding: 1rem;
+    background-color: #FFF1F1;
+    border: 1px solid var(--secondary-color);
+    color: var(--secondary-dark);
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+}
+
+
+/* ================================================================
+  FILE: /public/css/components/_tables.css
+  Descrição: Estilos para tabelas de dados.
+================================================================
+*/
+.table-container {
+    width: 100%;
+    /* Permite scroll horizontal em ecrãs pequenos */
+    overflow-x: auto;
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+table.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+table.modern-table th,
+table.modern-table td {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+/* Cabeçalho da Tabela */
+table.modern-table thead th {
+    background-color: #FAFAFB; /* Um cinza muito leve */
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Corpo da Tabela */
+table.modern-table tbody tr {
+    transition: var(--transition-fast);
+}
+
+table.modern-table tbody tr:hover {
+    background-color: var(--primary-light);
+}
+
+/* Remove a borda da última linha */
+table.modern-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Coluna de Ações */
+.table-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.table-actions .btn {
+    padding: 0.4rem 0.8rem; /* Botões menores */
+    font-size: 0.875rem;
+}
+
+/* Status (Ex: Ativo/Inativo) */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px; /* Pill shape */
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+.status-badge.active {
+    background-color: #E0F2F1;
+    color: #00796B;
+}
+.status-badge.inactive {
+    background-color: #FFEBEE;
+    color: var(--secondary-dark);
+}
+
+
+/* ================================================================
+  FILE: /public/css/components/_cards.css
+  Descrição: Estilos para cards (dashboard, itens).
+================================================================
+*/
+.card-grid {
+    display: grid;
+    /* Colunas responsivas */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 1.5rem;
+    transition: var(--transition-base);
+    overflow: hidden; /* Para cantos arredondados */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.card-icon {
+    font-size: 1.5rem;
+    padding: 0.75rem;
+    border-radius: 50%;
+    color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+.card-body p:last-child {
+    margin-bottom: 0;
+}
+
+/* Card de "Stat" (Ex: N. de Pedidos) */
+.stat-card .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+.stat-card .stat-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+
+/* ================================================================
+  FILE: /public/css/components/_modals.css
+  Descrição: Estilos para pop-ups (modals).
+================================================================
+*/
+.modal-backdrop {
+    position: fixed;
+    inset: 0; /* (top, right, bottom, left = 0) */
+    background-color: rgba(31, 41, 55, 0.6); /* --text-primary com alfa */
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Animação de entrada */
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition-fast);
+}
+
+.modal-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    
+    /* Animação de entrada */
+    transform: scale(0.95);
+    transition: var(--transition-base);
+}
+
+.modal-backdrop.open .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    font-weight: 300;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+    transition: var(--transition-fast);
+}
+.modal-close:hover {
+    color: var(--text-primary);
+}
+
+.modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ================================================================
+  INÍCIO DE: _admin-pages.css
+  Descrição: Estilos para as páginas de admin (lista e formulário).
+================================================================ */
+
+/* --- Estilos para users-list.hbs --- */
+
+.page-header {
+    display: flex;
+    flex-wrap: wrap; /* Para mobile */
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+    margin-bottom: 0.25rem;
+}
+
+.page-header p {
+    margin-bottom: 0;
+}
+
+.btn-danger {
+    background-color: transparent;
+    color: var(--secondary-color);
+    border: 2px solid var(--secondary-color);
+}
+
+.btn-danger:hover {
+    background-color: var(--secondary-color);
+    color: #FFF;
+}
+
+/* --- Estilos para user-form.hbs --- */
+
+.form-card-container {
+    max-width: 600px;
+    margin: 0 auto; /* Centraliza o card do formulário */
+}
+
+/* Alinha os botões "Cancelar" e "Salvar" à direita */
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+
+/* ================================================================
+  FILE: /public/css/pages/_login.css
+  Descrição: Estilos específicos da página de login.
+================================================================
+*/
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+}
+
+.login-title {
+    text-align: center;
+}
+
+.login-subtitle {
+    text-align: center;
+}
+
+.btn-access {
+    text-align: center;
+}
+
+.login-box {
+    max-width: 420px;
+    width: 100%;
+}
+
+.login-box .card-body {
+    padding-top: 1rem;
+}
+
+.login-logo {
+    display: block;
+    height: 150px;
+    margin: 0 auto 1.5rem auto;
+}
+
+/* ================================================================
+  FILE: /public/css/pages/_orders.css
+  Descrição: Estilos para gestão de pedidos (picking list).
+================================================================
+*/
+.picking-list {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.picking-item {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-base);
+}
+
+.picking-item .item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.picking-item .item-details {
+    flex-grow: 1;
+}
+
+.item-details .item-sku {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.item-details .item-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0.25rem 0;
+}
+
+.item-details .item-location {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.picking-item .item-action {
+    /* Checkbox grande */
+    transform: scale(2);
+    margin-right: 1rem;
+    accent-color: var(--success-color);
+}
+
+/* Estado coletado */
+.picking-item.collected {
+    background-color: #F0FFF4;
+    border-color: var(--success-color);
+}
+
+.picking-item.collected .item-name {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}

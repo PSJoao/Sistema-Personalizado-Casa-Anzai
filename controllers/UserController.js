@@ -6,7 +6,8 @@ const renderUserList = async (req, res) => {
         const users = await UserService.getAllUsers();
         res.render('admin/users-list', { 
             users,
-            user: req.user 
+            user: req.user,
+            activePage: 'users'
         });
     } catch (error) {
         console.error('Erro ao renderizar lista de utilizadores:', error);
@@ -19,7 +20,8 @@ const renderCreateForm = (req, res) => {
     res.render('admin/user-form', { 
         formTitle: 'Criar Novo Utilizador',
         formAction: '/admin/users/add',
-        user: req.user // Utilizador logado
+        user: req.user,
+        activePage: 'users'
     });
 };
 
@@ -38,7 +40,8 @@ const handleCreateUser = async (req, res) => {
             error: error.message,
             username,
             role,
-            user: req.user
+            user: req.user,
+            activePage: 'users'
         });
     }
 };
@@ -65,7 +68,8 @@ const renderEditForm = async (req, res) => {
             formAction: `/admin/users/edit/${userId}`,
             isEditing: true,
             userToEdit: userToEdit,
-            user: req.user // Utilizador logado
+            user: req.user,
+            activePage: 'users'
         });
     } catch (error) {
         console.error('Erro ao renderizar formulário de edição:', error);
@@ -103,7 +107,8 @@ const handleUpdateUser = async (req, res) => {
             isEditing: true,
             userToEdit: userToEdit,
             error: error.message,
-            user: req.user
+            user: req.user,
+            activePage: 'users'
         });
     }
 };
