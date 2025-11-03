@@ -49,7 +49,8 @@ const handleLogin = async (req, res) => {
         console.error('[AuthController.handleLogin] Erro:', error.message);
         res.render('login', {
             error: error.message,
-            username: req.body.username // Mantém o nome de utilizador no campo
+            username: req.body.username, // Mantém o nome de utilizador no campo
+            layout: 'public'
         });
     }
 };
