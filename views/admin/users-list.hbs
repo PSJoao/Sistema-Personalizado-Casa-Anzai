@@ -47,13 +47,14 @@
                 </td>
                 <td>
                     <div class="table-actions">
-                        <a href="/admin/users/edit/{{this.id}}" class="btn btn-outline">Editar</a>
+                        <a href="/admin/users/edit/{{this.id}}" class="btn btn-outline" id="edit-form">Editar</a>
                         
                         {{#if (neq @root.user.id this.id)}}
                             <form action="/admin/users/delete/{{this.id}}" method="POST"
-                                  onsubmit="return confirm('Tem a certeza que quer eliminar {{this.username}}?');">
+                                  class="delete-form"
+                                  data-username="{{this.username}}">
                                 <button type="submit" class="btn btn-danger">
-                                    Eliminar
+                                Eliminar
                                 </button>
                             </form>
                         {{/if}}
