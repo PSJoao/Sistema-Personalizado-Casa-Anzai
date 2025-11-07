@@ -30,7 +30,7 @@ const handleCreateUser = async (req, res) => {
     const { username, password, role } = req.body;
     try {
         await UserService.createUser(username, password, role);
-        res.redirect('/admin/users');
+        res.redirect('/admin/users?success=create')
     } catch (error) {
         console.error('Erro ao criar utilizador:', error);
         // Renderiza o formulário novamente com o erro
@@ -96,7 +96,7 @@ const handleUpdateUser = async (req, res) => {
             role, 
             is_active: activeBoolean 
         });
-        res.redirect('/admin/users');
+        res.redirect('/admin/users?success=update');
     } catch (error) {
         console.error('Erro ao atualizar utilizador:', error);
         // Recarrega os dados e mostra o erro

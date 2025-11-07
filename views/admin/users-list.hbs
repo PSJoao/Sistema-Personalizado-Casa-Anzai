@@ -9,17 +9,22 @@
 </div>
 
 {{#if (lookup @root.query "error")}}
-    <div class="form-error">
-        <strong>Erro:</strong> 
-        {{#if (eq (lookup @root.query "error") "self_delete")}}
-            Não pode eliminar o seu próprio utilizador.
-        {{else if (eq (lookup @root.query "error") "self_edit_forbidden")}}
-            Não pode editar o seu próprio utilizador através deste painel.
-        {{else if (eq (lookup @root.query "error") "not_found")}}
-            Utilizador não encontrado.
-        {{else}}
-            {{lookup @root.query "error"}}
-        {{/if}}
+    {{! Se houver um erro na URL (ex: auto-edição) }}
+    <div id="page-feedback" 
+         data-type="error" 
+         data-title="Ação Interrompida" 
+         data-message="{{#if (eq (lookup @root.query "error") "self_delete")}}Não pode eliminar o seu próprio utilizador.
+                     {{else if (eq (lookup @root.query "error") "self_edit_forbidden")}}Não pode editar o seu próprio utilizador através deste painel.
+                     {{else if (eq (lookup @root.query "error") "not_found")}}Utilizador não encontrado.
+                     {{else}}{{lookup @root.query "error"}}{{/if}}">
+    </div>
+
+{{else if (lookup @root.query "success")}}
+    {{! Se houver uma mensagem de sucesso na URL (que acabámos de adicionar no Controller) }}
+    <div id="page-feedback" 
+         data-type="success" 
+         data-title="Sucesso"
+         data-message="Utilizador {{#if (eq (lookup @root.query "success") "create")}}criado{{else}}atualizado{{/if}} com sucesso!">
     </div>
 {{/if}}
 

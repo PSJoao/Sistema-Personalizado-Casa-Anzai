@@ -9,8 +9,10 @@
             <form action="{{formAction}}" method="POST">
                 
                 {{#if error}}
-                    <div class="form-error">
-                        {{error}}
+                    <div id="page-feedback" 
+                        data-type="error" 
+                        data-title="Erro ao Salvar"
+                        data-message="{{error}}">
                     </div>
                 {{/if}}
 
@@ -26,8 +28,6 @@
                         <label for="password">Password:</label>
                         <input type="password" id="password" name="password" class="form-control" required>
                     </div>
-                {{else}}
-                    <p><em>(A alteração de senha deve ser feita por um fluxo de "Reset de Senha".)</em></p>
                 {{/unless}}
 
                 <div class="form-group">

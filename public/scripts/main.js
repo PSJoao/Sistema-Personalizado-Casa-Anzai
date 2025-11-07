@@ -211,4 +211,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    const feedbackEl = document.getElementById('page-feedback');
+    
+    if (feedbackEl) {
+        // Lê os dados que o Handlebars escreveu no HTML
+        const { type, title, message } = feedbackEl.dataset;
+
+        if (message) {
+            // Atrasamos 50ms para garantir que a página está pronta
+            setTimeout(() => {
+                if (type === 'error') {
+                    // Chama a sua modal de alerta!
+                    ModalSystem.alert(title || 'Erro', message);
+                } else if (type === 'success') {
+                    // Chama a sua modal de alerta!
+                    ModalSystem.alert(title || 'Sucesso', message);
+                }
+            }, 50);
+        }
+    }
+    
 });
