@@ -1,0 +1,36 @@
+<div class="page-header">
+    <div>
+        <h1>Separação de Produtos</h1>
+        <p>Selecione um departamento para iniciar a separação.</p>
+    </div>
+</div>
+
+{{#if error}}
+    <div class="card">
+        <div class="card-body">
+            <div class="form-error">{{error}}</div>
+        </div>
+    </div>
+{{/if}}
+
+{{#if departments.length}}
+    <div class="separation-department-grid">
+        {{#each departments}}
+            <article class="card separation-department-card">
+                <div class="card-header">
+                    <h3 class="card-title">{{lookup ../departmentLabels this.cod_departamento}}</h3>
+                </div>
+                <div class="card-body">
+                    <p><strong>Produtos pendentes:</strong> {{this.produtos_com_pendencia}}</p>
+                    <p><strong>Unidades pendentes:</strong> {{this.unidades_pendentes}}</p>
+                </div>
+                <footer class="card-footer">
+                    <a href="/separacao/departamento/{{this.cod_departamento}}" class="btn btn-primary">Iniciar separação</a>
+                </footer>
+            </article>
+        {{/each}}
+    </div>
+{{else}}
+    <p class="muted">Nenhum departamento possui produtos pendentes no momento.</p>
+{{/if}}
+

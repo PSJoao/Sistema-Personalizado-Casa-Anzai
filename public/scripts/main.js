@@ -231,5 +231,206 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 50);
         }
     }
-    
+
+    /**
+     * ================================================================
+     * Dashboard de Pedidos - Atualização Dinâmica
+     * ================================================================
+     */
+    const statusCardsContainer = document.querySelector('[data-order-status-cards]');
+    const orderCardsContainer = document.querySelector('[data-order-cards]');
+    const statusLabelEl = document.querySelector('[data-selected-status-label]');
+    const orderCountEl = document.querySelector('[data-order-count]');
+    const statusButtons = document.querySelectorAll('[data-status]');
+    const statusCardElements = document.querySelectorAll('[data-status-card]');
+
+    if (statusCardsContainer && orderCardsContainer) {
+        const summaryEndpoint = '/pedidos/api/status-summary';
+        const ordersEndpoint = (bucket) => `/pedidos/api/status/${bucket}`;
+        const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+        const dateFormatter = new Intl.DateTimeFormat('pt-BR');
+
+        const statusLabelMap = {};
+        statusButtons.forEach((button) => {
+            statusLabelMap[button.dataset.status] = button.textContent.trim();
+        });
+
+        let activeBucket = document.querySelector('.order-status-button.active')?.dataset.status
+            || statusCardElements?.[0]?.dataset.statusCard
+            || 'pendente';
+
+        const setActiveBucket = (bucket) => {
+            activeBucket = bucket;
+
+            statusButtons.forEach((button) => {
+                button.classList.toggle('active', button.dataset.status === bucket);
+            });
+
+            statusCardElements.forEach((card) => {
+                card.classList.toggle('is-active', card.dataset.statusCard === bucket);
+            });
+
+            if (statusLabelEl) {
+                statusLabelEl.textContent = statusLabelMap[bucket] || 'Pedidos';
+            }
+        };
+
+        const updateSummaryCards = (cards = []) => {
+            cards.forEach((card) => {
+                const cardElement = statusCardsContainer.querySelector(`[data-status-card="${card.id}"]`);
+                if (cardElement) {
+                    const totalEl = cardElement.querySelector('[data-status-total]');
+                    if (totalEl) {
+                        totalEl.textContent = card.total;
+                    }
+                }
+
+                const buttonElement = document.querySelector(`.order-status-button[data-status="${card.id}"]`);
+                if (buttonElement) {
+                    statusLabelMap[card.id] = card.label;
+                    buttonElement.textContent = card.label;
+                }
+            });
+        };
+
+        const createDetailLine = (label, value) => {
+            const paragraph = document.createElement('p');
+            const strong = document.createElement('strong');
+            strong.textContent = `${label}:`;
+            paragraph.appendChild(strong);
+            paragraph.appendChild(document.createTextNode(` ${value ?? '-'}`));
+            return paragraph;
+        };
+
+        const renderOrders = (bucket, orders = []) => {
+            orderCardsContainer.innerHTML = '';
+
+            if (orderCountEl) {
+                const count = orders.length || 0;
+                orderCountEl.textContent = count === 1 ? '1 pedido' : `${count} pedidos`;
+            }
+
+            if (!orders.length) {
+                const emptyMsg = document.createElement('p');
+                emptyMsg.className = 'muted';
+                emptyMsg.textContent = 'Nenhum pedido encontrado para este status.';
+                orderCardsContainer.appendChild(emptyMsg);
+                return;
+            }
+
+            orders.forEach((order) => {
+                const card = document.createElement('article');
+                card.className = 'card order-card';
+
+                const header = document.createElement('div');
+                header.className = 'card-header';
+
+                const title = document.createElement('h3');
+                title.textContent = `Pedido ${order.numero_venda || '-'}`;
+                header.appendChild(title);
+
+                const chip = document.createElement('span');
+                chip.className = 'order-chip';
+                const orderStatusKey = order.bucket || order.status_bucket;
+                chip.textContent = statusLabelMap[orderStatusKey] || statusLabelMap[bucket] || 'Status';
+                header.appendChild(chip);
+
+                card.appendChild(header);
+
+                const body = document.createElement('div');
+                body.className = 'card-body';
+
+                body.appendChild(createDetailLine('Comprador', order.comprador || '-'));
+                body.appendChild(createDetailLine('Título', order.titulo_anuncio || '-'));
+                body.appendChild(createDetailLine('Unidades', order.unidades ?? '-'));
+                const formattedTotal = currencyFormatter.format(Number(order.total) || 0);
+                body.appendChild(createDetailLine('Total', formattedTotal));
+
+                card.appendChild(body);
+
+                const footer = document.createElement('footer');
+                footer.className = 'card-footer';
+
+                const date = document.createElement('span');
+                let formattedDate = '-';
+                if (order.data_venda) {
+                    const dateValue = new Date(order.data_venda);
+                    if (!Number.isNaN(dateValue.getTime())) {
+                        formattedDate = dateFormatter.format(dateValue);
+                    }
+                }
+                const dateLabel = document.createElement('strong');
+                dateLabel.textContent = 'Data:';
+                date.appendChild(dateLabel);
+                date.appendChild(document.createTextNode(` ${formattedDate}`));
+                footer.appendChild(date);
+
+                const platform = document.createElement('span');
+                const platformLabel = order.plataforma_label || order.plataforma || '—';
+                const platformStrong = document.createElement('strong');
+                platformStrong.textContent = 'Plataforma:';
+                platform.appendChild(platformStrong);
+                platform.appendChild(document.createTextNode(` ${platformLabel}`));
+                footer.appendChild(platform);
+
+                card.appendChild(footer);
+
+                orderCardsContainer.appendChild(card);
+            });
+        };
+
+        const loadOrders = async (bucket) => {
+            try {
+                const response = await fetch(ordersEndpoint(bucket));
+                if (!response.ok) {
+                    throw new Error('Falha ao carregar pedidos.');
+                }
+
+                const { orders = [] } = await response.json();
+                renderOrders(bucket, orders);
+            } catch (error) {
+                console.error('[Pedidos] Erro ao carregar pedidos:', error);
+                if (orderCardsContainer) {
+                    orderCardsContainer.innerHTML = '';
+                    const errorMsg = document.createElement('p');
+                    errorMsg.className = 'muted';
+                    errorMsg.textContent = 'Não foi possível carregar os pedidos.';
+                    orderCardsContainer.appendChild(errorMsg);
+                }
+            }
+        };
+
+        const loadSummary = async () => {
+            try {
+                const response = await fetch(summaryEndpoint);
+                if (!response.ok) {
+                    throw new Error('Falha ao carregar resumo de pedidos.');
+                }
+
+                const { cards = [] } = await response.json();
+                updateSummaryCards(cards);
+            } catch (error) {
+                console.warn('[Pedidos] Não foi possível atualizar o resumo:', error);
+            }
+        };
+
+        statusButtons.forEach((button) => {
+            button.addEventListener('click', async () => {
+                const bucket = button.dataset.status;
+                if (!bucket || bucket === activeBucket) {
+                    return;
+                }
+
+                setActiveBucket(bucket);
+                await loadOrders(bucket);
+            });
+        });
+
+        setActiveBucket(activeBucket);
+        loadOrders(activeBucket);
+        loadSummary();
+
+        // Atualiza o resumo a cada 30 segundos
+        setInterval(loadSummary, 30000);
+    }
 });

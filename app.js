@@ -41,6 +41,12 @@ app.use('/auth', authRoutes);
 const userRoutes = require('./routes/userRoutes');
 app.use('/admin/users', userRoutes);
 
+const orderRoutes = require('./routes/orderRoutes');
+app.use('/pedidos', orderRoutes);
+
+const separationRoutes = require('./routes/separationRoutes');
+app.use('/separacao', separationRoutes);
+
 
 // --- Rota Raiz (Redireciona para o login) ---
 app.get('/', (req, res) => {

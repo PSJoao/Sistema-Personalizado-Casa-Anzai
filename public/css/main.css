@@ -799,8 +799,290 @@ table.modern-table tbody tr:last-child td {
     padding: 1.5rem;
 }
 
+
+/* ================================================================
+  FILE: /public/css/pages/_orders.css
+  Descrição: Estilos específicos para o dashboard e upload de pedidos.
+================================================================
+*/
+
+.orders-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.orders-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.order-stat-card {
+    cursor: pointer;
+    border-left: 4px solid transparent;
+}
+
+.order-stat-card.is-active {
+    border-left-color: var(--primary-color);
+    box-shadow: var(--shadow-lg);
+}
+
+.orders-content {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+}
+
+.order-status-sidebar {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 1.5rem;
+    height: fit-content;
+}
+
+.order-status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.order-status-button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    background-color: transparent;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+    cursor: pointer;
+    text-align: left;
+}
+
+.order-status-button:hover,
+.order-status-button.active {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+.order-list-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.order-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.order-list-header h2 {
+    margin-bottom: 0.25rem;
+}
+
+.order-list-meta {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.order-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.order-card .card-body p {
+    margin-bottom: 0.35rem;
+}
+
+.order-card .card-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+}
+
+.order-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.orders-upload-form .form-group {
+    max-width: 540px;
+}
+
+.orders-upload-form .form-text {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+.muted {
+    color: var(--text-secondary);
+}
+
+@media (max-width: 1024px) {
+    .orders-content {
+        grid-template-columns: 1fr;
+    }
+
+    .order-status-sidebar {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 640px) {
+    .order-list-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
 .login-title {
     text-align: center;
+}
+
+
+/* ================================================================
+  FILE: /public/css/pages/_separation.css
+  Descrição: Estilos da jornada de separação de produtos.
+================================================================
+*/
+
+.separation-department-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.separation-department-card .card-body p {
+    margin-bottom: 0.35rem;
+}
+
+.separation-app {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.separation-card {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.separation-card.is-empty {
+    text-align: center;
+}
+
+.separation-card.is-complete {
+    border-left: 4px solid var(--success-color);
+}
+
+.separation-counter {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.separation-counter .counter-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.separation-counter .counter-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.separation-counter .counter-unit {
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: lowercase;
+}
+
+.separation-card .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.separation-product-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+
+.separation-product-meta .meta-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    font-weight: 700;
+}
+
+.separation-product-meta .meta-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.separation-scan-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.scan-input-wrapper {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.scan-input-wrapper .form-control {
+    flex: 1;
+}
+
+.scan-feedback {
+    margin-top: 0.5rem;
+    font-weight: 600;
+}
+
+.scan-feedback[data-variant="error"] {
+    color: var(--secondary-color);
+}
+
+.scan-feedback[data-variant="success"] {
+    color: var(--success-color);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .login-subtitle {

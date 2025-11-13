@@ -1,0 +1,75 @@
+<div class="page-header">
+    <div>
+        <h1>Separação - {{departmentName}}</h1>
+        <p>Leia o produto indicado e bipar o código/SKU para confirmar cada unidade.</p>
+    </div>
+    <a href="/separacao" class="btn btn-outline">Voltar</a>
+</div>
+
+<section id="separation-app"
+         class="separation-app"
+         data-department-code="{{departmentCode}}"
+         data-department-name="{{departmentName}}"
+         data-initial-session='{{json session}}'>
+
+    <div class="card separation-card is-empty">
+        <div class="card-body">
+            <p class="muted">A aguardar atribuição de produto pendente...</p>
+        </div>
+    </div>
+
+</section>
+
+<template id="separation-card-template">
+    <article class="card separation-card">
+        <header class="card-header">
+            <div>
+                <h3 class="card-title" data-product-name></h3>
+                <p class="muted">Departamento: <span data-department></span></p>
+            </div>
+            <div class="separation-product-meta">
+                <span class="meta-label">SKU</span>
+                <span class="meta-value" data-product-sku></span>
+            </div>
+        </header>
+        <div class="card-body">
+            <div class="separation-counter">
+                <span class="counter-label">Restam</span>
+                <span class="counter-value" data-remaining>0</span>
+                <span class="counter-unit" data-unit></span>
+            </div>
+
+            <form class="separation-scan-form" data-scan-form autocomplete="off">
+                <label for="scan-input" class="sr-only">Bipar SKU</label>
+                <div class="scan-input-wrapper">
+                    <input type="text"
+                           id="scan-input"
+                           class="form-control"
+                           placeholder="Bipe o código ou digite manualmente"
+                           data-scan-input
+                           autofocus
+                           autocomplete="off"
+                           inputmode="numeric"
+                           aria-label="Bipar SKU">
+                    <button type="submit" class="btn btn-primary" data-action="pick">Confirmar</button>
+                </div>
+            </form>
+
+            <div class="scan-feedback" data-feedback hidden></div>
+        </div>
+    </article>
+</template>
+
+<template id="separation-finished-template">
+    <article class="card separation-card is-complete">
+        <div class="card-body">
+            <h3>Produto concluído!</h3>
+            <p class="muted">Todas as unidades pendentes foram separadas. Aguarde um novo produto ou solicite o próximo.</p>
+        </div>
+        <footer class="card-footer">
+            <button type="button" class="btn btn-primary" data-action="request-next">Buscar próximo produto</button>
+        </footer>
+    </article>
+</template>
+
+<script src="/scripts/separation.js"></script>

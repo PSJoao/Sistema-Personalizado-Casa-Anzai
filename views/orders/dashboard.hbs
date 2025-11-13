@@ -1,0 +1,87 @@
+<div class="page-header">
+    <div>
+        <h1>Pedidos - Visão Geral</h1>
+        <p>Acompanhe o status atual das coletas.</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="/pedidos/upload" class="btn btn-outline">Importar Planilhas</a>
+    </div>
+</div>
+
+{{#if error}}
+    <div class="card">
+        <div class="card-body">
+            <div class="form-error">
+                {{error}}
+            </div>
+        </div>
+    </div>
+{{/if}}
+
+<section class="orders-dashboard">
+    <div class="orders-status-grid" data-order-status-cards>
+        {{#each statusCards}}
+            <article class="card stat-card order-stat-card {{#if (eq ../initialBucket id)}}is-active{{/if}}" data-status-card="{{id}}">
+                <div class="card-body">
+                    <div class="stat-number" data-status-total>{{total}}</div>
+                    <div class="stat-label">{{label}}</div>
+                </div>
+            </article>
+        {{else}}
+            <p>Sem dados carregados. Importe uma planilha para começar.</p>
+        {{/each}}
+    </div>
+
+    <div class="orders-content">
+        <aside class="order-status-sidebar">
+            <h2>Filtrar por Status</h2>
+            <ul class="order-status-list" data-status-filter>
+                {{#each statusCards}}
+                    <li>
+                        <button class="order-status-button {{#if (eq ../initialBucket id)}}active{{/if}}" data-status="{{id}}">
+                            {{label}}
+                        </button>
+                    </li>
+                {{/each}}
+            </ul>
+        </aside>
+
+        <section class="order-list-section">
+            <div class="order-list-header">
+                <div>
+                    <h2 data-selected-status-label>{{lookup statusLabels initialBucket}}</h2>
+                    <p>Pedidos mais recentes importados para a plataforma.</p>
+                </div>
+                <div class="order-list-meta" data-order-count>{{length (lookup groupedOrders initialBucket)}} pedidos</div>
+            </div>
+
+            <div class="order-cards-grid" data-order-cards>
+                {{#with (lookup groupedOrders initialBucket)}}
+                    {{#each this}}
+                        <article class="card order-card">
+                            <div class="card-header">
+                                <h3>Pedido {{numero_venda}}</h3>
+                                <span class="order-chip">{{lookup @root.statusLabels status_bucket}}</span>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Comprador:</strong> {{comprador}}</p>
+                                <p><strong>Título:</strong> {{titulo_anuncio}}</p>
+                                <p><strong>Unidades:</strong> {{unidades}}</p>
+                                <p><strong>Total:</strong> R$ {{formatCurrency total}}</p>
+                            </div>
+                            <footer class="card-footer">
+                                <span><strong>Data:</strong> {{formatDate data_venda}}</span>
+                                <span><strong>Plataforma:</strong> {{platformLabel plataforma}}</span>
+                            </footer>
+                        </article>
+                    {{else}}
+                        <p class="muted">Nenhum pedido encontrado para este status.</p>
+                    {{/each}}
+                {{else}}
+                    <p class="muted">Nenhum pedido encontrado para este status.</p>
+                {{/with}}
+            </div>
+        </section>
+    </div>
+</section>
+
