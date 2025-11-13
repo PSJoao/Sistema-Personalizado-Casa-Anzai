@@ -37,7 +37,7 @@ const handleLogin = async (req, res) => {
         res.cookie('auth_token', token, {
             httpOnly: true, // O cookie não pode ser acedido por JavaScript no cliente
             secure: process.env.NODE_ENV === 'production', // Usar HTTPS em produção
-            maxAge: 7 * 24 * 60 * 60 * 1000 // Expira em 7 dias
+            maxAge: 1 * 24 * 60 * 60 * 1000 // Expira em 1 dia
         });
 
         // 3. Redireciona para o dashboard

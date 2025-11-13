@@ -335,52 +335,63 @@ const ProductService = {
   },
 
   async acquireProductForUser({ userId, departmentCode }) {
-    // Verifica sessão atual
-    let currentLock = await PickingLock.findByUser(userId);
-    if (currentLock) {
-      if (currentLock.departamento !== departmentCode) {
-        await PickingLock.releaseByUser(userId);
-        currentLock = null;
-      } else {
-        const pendentes = await OrderItem.countPendingUnitsByProduct(currentLock.produto_codigo);
-        if (pendentes > 0) {
-          const product = await Product.findByCodigo(currentLock.produto_codigo);
-          return { lock: currentLock, product, pendentes };
-        }
-        await PickingLock.releaseByUser(userId);
-        currentLock = null;
-      }
+    // 1. Limpa travas obsoletas de TODOS os utilizadores (Resolve Problema B)
+    // Define um tempo curto (ex: 120 minutos = 2 horas)
+    // Assegure-se de que adicionou a função clearStaleLocks em models/PickingLock.js
+    await PickingLock.clearStaleLocks(120);
+
+    // 2. Verifica se o utilizador JÁ TEM uma sessão válida NESTE departamento (Resolve Problema A)
+    // **** ESTA É A LINHA CORRIGIDA ****
+    const existingAssignment = await this.getAssignmentForUser(userId, departmentCode);
+    
+    if (existingAssignment) {
+      // O utilizador já tem um lock. Apenas retorna-o.
+      // Isto impede que a Aba 2 "roube" o lock da Aba 1.
+      // Ambas as abas agora apontarão para o mesmo produto.
+      console.log(`[ProductService.acquire] Utilizador ${userId} já possui sessão no dep ${departmentCode}. A reencaminhar.`);
+      return existingAssignment;
     }
 
-    // Tenta atribuir novo produto
-    for (let attempts = 0; attempts < 5; attempts += 1) {
-      const candidate = await Product.findNextAvailableProduct(departmentCode);
-      if (!candidate) {
-        return null;
-      }
+    // 3. Se não tem, significa que é uma nova sessão ou está a mudar de departamento.
+    // Libera qualquer trava que o utilizador tenha em OUTROS departamentos.
+    await PickingLock.releaseByUser(userId);
 
-      const pendentes = Number(candidate.unidades_pendentes || 0);
-      if (pendentes <= 0) {
-        return null;
-      }
-
-      const lock = await PickingLock.acquire({
-        produtoCodigo: candidate.codigo,
-        departamento: candidate.cod_departamento,
-        userId,
-        quantidadeMeta: pendentes
-      });
-
-      if (lock) {
-        return {
-          lock,
-          product: candidate,
-          pendentes
-        };
-      }
+    // 4. Busca o próximo produto livre
+    const product = await Product.findNextAvailableProduct(departmentCode);
+    if (!product) {
+      return null; // Nenhum produto disponível
     }
 
-    return null;
+    // 5. Calcula o total pendente e tenta criar a trava
+    const totalPending = await OrderItem.countPendingUnitsByProduct(product.codigo);
+    const lock = await PickingLock.acquire({
+      produtoCodigo: product.codigo,
+      departamento: product.cod_departamento,
+      userId,
+      quantidadeMeta: totalPending,
+    });
+
+    if (!lock) {
+      // CONDIÇÃO DE CORRIDA (RACE CONDITION):
+      // Outro utilizador (ex: User 2) pegou este produto
+      // entre a etapa 4 (find) e a etapa 5 (acquire).
+      // O "ON CONFLICT" no PickingLock.acquire impediu a criação.
+      console.warn(`[ProductService.acquire] Race condition para user ${userId}, produto ${product.codigo}. O lock falhou. A tentar de novo.`);
+      
+      // A forma mais simples de resolver é apenas retornar nulo 
+      // e deixar o frontend tentar de novo (ou mostrar "sem produtos").
+      return null;
+    }
+
+    // 6. Sucesso: retorna a nova sessão
+    console.log(`[ProductService.acquire] Nova sessão para user ${userId}, produto ${product.codigo}.`);
+    const pendentes = await OrderItem.countPendingUnitsByProduct(product.codigo);
+    return {
+      lock,
+      product,
+      pendentes,
+      meta: lock.quantidade_meta,
+    };
   },
 
   async pickUnit({ userId, produtoCodigo, sku }) {

@@ -59,6 +59,25 @@ const PickingLock = {
     return rows[0] || null;
   },
 
+  async clearStaleLocks(timeoutMinutes = 120) {
+    const query = {
+      text: `
+        DELETE FROM ${TABLE_NAME} 
+        WHERE updated_at < NOW() - INTERVAL '${Number(timeoutMinutes)} minutes';
+      `,
+    };
+
+    try {
+      const { rowCount } = await db.query(query.text);
+      if (rowCount > 0) {
+        console.log(`[PickingLock.clearStaleLocks] Limpas ${rowCount} travas obsoletas.`);
+      }
+      return rowCount;
+    } catch (error) {
+      console.error('[PickingLock.clearStaleLocks] Erro ao limpar travas obsoletas:', error);
+    }
+  },
+
   async releaseByUser(userId) {
     const query = {
       text: `DELETE FROM ${TABLE_NAME} WHERE user_id = $1 RETURNING *;`,
