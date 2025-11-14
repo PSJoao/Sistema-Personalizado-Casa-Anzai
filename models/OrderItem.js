@@ -118,26 +118,26 @@ const OrderItem = {
     return rows[0] || null;
   },
 
-  async findOrdersNeedingStatusUpdate(orderIdList) {
-    if (!orderIdList || orderIdList.length === 0) {
-      return [];
-    }
-
+  async findOrderStatusByNumeroVenda(numeroVenda) {
     const query = {
       text: `
         SELECT
-          oi.order_id,
-          BOOL_AND(oi.status = 'separado') AS todos_separados,
-          BOOL_AND(oi.status = 'pendente') AS todos_pendentes
+          mlo.numero_venda,
+          -- Conta o total de itens (linhas de produto) para este pedido
+          COUNT(oi.id) AS total_itens,
+          -- Conta quantos itens estão com status 'separado'
+          COUNT(oi.id) FILTER (WHERE oi.status = 'separado') AS itens_separados,
+          -- Retorna true APENAS se todos os itens estiverem separados
+          BOOL_AND(oi.status = 'separado') AS pedido_completo
         FROM ${TABLE_NAME} oi
-        WHERE oi.order_id = ANY($1)
-        GROUP BY oi.order_id;
+        JOIN public.mercado_livre_orders mlo ON oi.order_id = mlo.id
+        WHERE mlo.numero_venda = $1
+        GROUP BY mlo.numero_venda;
       `,
-      values: [orderIdList]
+      values: [numeroVenda],
     };
-
     const { rows } = await db.query(query.text, query.values);
-    return rows;
+    return rows[0] || null;
   }
 };
 

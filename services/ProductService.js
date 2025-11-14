@@ -246,35 +246,29 @@ async function buildProductRows(records) {
   }));
 }
 
-async function ensureOrderStatusFor(orderIdList) {
-  if (!orderIdList || orderIdList.length === 0) {
-    return;
-  }
-
-  const numericIds = orderIdList
-    .map((id) => {
-      const parsed = Number(id);
-      return Number.isFinite(parsed) ? parsed : null;
-    })
-    .filter((id) => id !== null);
-
-  if (numericIds.length === 0) {
-    return;
-  }
-
-  const statusSummaries = await OrderItem.findOrdersNeedingStatusUpdate(numericIds);
-
-  const updates = statusSummaries.map((summary) => {
-    if (summary.todos_separados) {
-      return { orderId: Number(summary.order_id), statusBucket: 'separado' };
+async function ensureOrderStatusFor(allocationOrderId) {
+  try {
+    // 1. Descobrir qual é o 'numero_venda' a partir do ID da linha que acabamos de bipar
+    const orderRow = await MercadoLivreOrder.findById(allocationOrderId);
+    if (!orderRow) {
+      console.warn(`[ensureOrderStatusFor] Não foi possível encontrar a linha de pedido ${allocationOrderId}`);
+      return;
     }
-    if (summary.todos_pendentes) {
-      return { orderId: Number(summary.order_id), statusBucket: 'pendente' };
-    }
-    return { orderId: Number(summary.order_id), statusBucket: 'pendente' };
-  });
+    
+    const { numero_venda } = orderRow;
 
-  await MercadoLivreOrder.bulkUpdateStatus(updates);
+    // 2. Verificar o status AGREGADO de todos os itens desse 'numero_venda'
+    const statusInfo = await OrderItem.findOrderStatusByNumeroVenda(numero_venda);
+
+    if (statusInfo && statusInfo.pedido_completo) {
+      // 3. Se o pedido (kit) está completo, atualizar TODAS as linhas de pedido (MLO) para 'separado'
+      const updatedRows = await MercadoLivreOrder.updateStatusByNumeroVenda(numero_venda, 'separado');
+      console.log(`[ProductService] Pedido (Kit) ${numero_venda} concluído. ${updatedRows} linhas atualizadas.`);
+    }
+    // Se não, não faz nada (o status_bucket continua 'pendente')
+  } catch (error) {
+    console.error(`[ensureOrderStatusFor] Erro ao verificar status para pedido (linha ${allocationOrderId}):`, error);
+  }
 }
 
 const ProductService = {
@@ -433,7 +427,7 @@ const ProductService = {
     
     // Atualiza o status do pedido no ML (sua lógica original)
     const allocationOrderId = Number(allocation.order_id);
-    await ensureOrderStatusFor([allocationOrderId]);
+    await ensureOrderStatusFor(allocationOrderId);
 
     if (pendentes === 0) {
       // PRODUTO FINALIZADO!

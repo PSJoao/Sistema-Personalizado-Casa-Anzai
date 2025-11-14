@@ -190,29 +190,31 @@ const MercadoLivreOrder = {
    * @param {number} limit
    * @returns {Promise<Array<object>>}
    */
-  async findRecentByStatusBucket(statusBucket, limit = 8) {
+  async findRecentByStatusBucket(bucket, limit = 10) {
     const query = {
       text: `
-        SELECT 
-          id,
+        SELECT
           numero_venda,
-          data_venda,
-          descricao_status,
-          unidades,
-          total,
-          titulo_anuncio,
-          comprador,
           status_bucket,
-          plataforma,
-          uploaded_at
+          MAX(plataforma) AS plataforma,
+          -- Pega o nome do comprador (geralmente o mesmo para todas as linhas)
+          MAX(comprador) AS comprador,
+          -- Pega a data da venda
+          MAX(data_venda) AS data_venda,
+          -- Concatena os nomes de todos os produtos do kit
+          STRING_AGG(titulo_anuncio, ' | ') AS titulo_anuncio,
+          -- Soma as unidades de todas as linhas do pedido
+          SUM(unidades) AS unidades,
+          -- Soma o total de todas as linhas do pedido
+          SUM(total) AS total
         FROM ${TABLE_NAME}
         WHERE status_bucket = $1
-        ORDER BY data_venda DESC NULLS LAST, uploaded_at DESC
-        LIMIT $2
+        GROUP BY numero_venda, status_bucket
+        ORDER BY data_venda DESC NULLS LAST
+        LIMIT $2;
       `,
-      values: [statusBucket, limit]
+      values: [bucket, limit],
     };
-
     const { rows } = await db.query(query.text, query.values);
     return rows;
   },
@@ -248,6 +250,29 @@ const MercadoLivreOrder = {
 
     const { rows } = await db.query(query.text, query.values);
     return rows;
+  },
+
+  async findById(id) {
+    const query = {
+      text: `SELECT * FROM ${TABLE_NAME} WHERE id = $1`,
+      values: [id],
+    };
+    const { rows } = await db.query(query.text, query.values);
+    return rows[0] || null;
+  },
+
+  async updateStatusByNumeroVenda(numeroVenda, statusBucket) {
+    const query = {
+      text: `
+        UPDATE ${TABLE_NAME}
+        SET status_bucket = $2, updated_at = NOW()
+        WHERE numero_venda = $1
+          AND status_bucket != $2; -- Evita atualizações desnecessárias
+      `,
+      values: [numeroVenda, statusBucket],
+    };
+    const { rowCount } = await db.query(query.text, query.values);
+    return rowCount;
   },
 
   async findByNumeroVendas(orderNumbers) {
