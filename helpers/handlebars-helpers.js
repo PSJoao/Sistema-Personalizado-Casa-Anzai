@@ -12,6 +12,15 @@ const helpers = {
 
     neq: (v1, v2) => v1 !== v2,
 
+    or: (...args) => {
+        args.pop();
+        return args.some(Boolean);
+    },
+
+    json: (context) => {
+        return JSON.stringify(context);
+    },
+
     lookup: (obj, field) => obj && obj[field],
 
     length: (collection) => {

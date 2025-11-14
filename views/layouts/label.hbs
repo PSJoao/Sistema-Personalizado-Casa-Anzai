@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-R">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etiqueta de Pedido</title>
+    <style>
+        @page {
+            /* Tamanho da etiqueta 10cm x 15cm */
+            size: 100mm 150mm;
+            margin: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 100mm;
+            height: 150mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            border: 1px dashed #000; /* Apenas para debug visual */
+        }
+        .label-content {
+            text-align: center;
+        }
+        h1 {
+            font-size: 24pt;
+            margin: 0;
+        }
+        p {
+            font-size: 18pt;
+            margin: 5px 0 0;
+        }
+    </style>
+</head>
+<body>
+    {{{body}}}
+</body>
+</html>

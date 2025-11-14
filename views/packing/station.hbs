@@ -1,0 +1,95 @@
+{{! views/packing/station.hbs }}
+<div class="page-header">
+    <div>
+        <h1>Empacotamento - {{orderTypeLabel}}</h1>
+        <p>Confira os itens do pedido e bipe o código/SKU para confirmar cada unidade.</p>
+    </div>
+    <a href="/empacotamento" class="btn btn-outline">Voltar</a>
+</div>
+
+<section id="packing-app"
+         class="separation-app"
+         data-order-type="{{orderType}}"
+         data-initial-session='{{json session}}'>
+
+    {{! O JS irá preencher este container }}
+    <div class="card separation-card is-empty">
+        <div class="card-body">
+            <p class="muted">A aguardar atribuição de pedido separado...</p>
+        </div>
+    </div>
+
+</section>
+
+{{! Template para o card principal de empacotamento }}
+<template id="packing-card-template">
+    <article class="card separation-card">
+        <header class="card-header">
+            <div>
+                <h3 class="card-title" data-order-number></h3>
+                <p class="muted">Comprador: <span data-order-buyer></span></p>
+            </div>
+            <div class="separation-product-meta">
+                <span class="meta-label">Total de Unidades</span>
+                <span class="meta-value" data-order-total-units></span>
+            </div>
+        </header>
+        
+        <div class="card-body">
+            <p><strong>Itens do Pedido:</strong></p>
+            <ul class="packing-item-list" data-item-list>
+                {{! JS irá preencher esta lista }}
+            </ul>
+        </div>
+
+        <div class="card-body has-top-border">
+            <form class="separation-scan-form" data-scan-form autocomplete="off">
+                <label for="scan-input" class="sr-only">Bipar SKU</label>
+                <div class="scan-input-wrapper">
+                    <input type="text"
+                           id="scan-input"
+                           class="form-control"
+                           placeholder="Bipe o código do produto"
+                           data-scan-input
+                           autofocus
+                           autocomplete="off"
+                           inputmode="numeric"
+                           aria-label="Bipar SKU">
+                    <button type="submit" class="btn btn-primary" data-action="pack">Confirmar</button>
+                </div>
+            </form>
+            <div class="scan-feedback" data-feedback hidden></div>
+        </div>
+    </article>
+</template>
+
+{{! Template para um item na lista de produtos do card }}
+<template id="packing-item-template">
+     <li class="packing-item" data-sku-item>
+        <span class="packing-item-status" data-status-icon></span>
+        <div class="packing-item-info">
+            <span class="packing-item-name" data-item-name></span>
+            <span class="packing-item-sku muted" data-item-sku></span>
+        </div>
+        <span class="packing-item-counter" data-item-counter>
+            <span data-scanned-count></span> / <span data-needed-count></span>
+        </span>
+    </li>
+</template>
+
+{{! Template para o card de pedido finalizado }}
+<template id="packing-finished-template">
+    <article class="card separation-card is-complete">
+        <div class="card-body">
+            <h3>Pedido Concluído!</h3>
+            <p class="muted" data-order-number-finished></p>
+            <p>O pedido foi movido para "Em Romaneio". A etiqueta será aberta para impressão.</p>
+        </div>
+        <footer class="card-footer">
+            <button type="button" class="btn btn-primary" data-action="request-next">Buscar próximo pedido</button>
+        </footer>
+    </article>
+</template>
+
+{{! Novo script JS para esta página }}
+<script src="/scripts/packing.js"></script>

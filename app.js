@@ -4,8 +4,7 @@ const express = require('express');
 const { engine } = require('express-handlebars');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-// NOVA IMPORTAÇÃO: O nosso "segurança" (porteiro)
-const { protectRoute } = require('./middleware/authMiddleware'); // Certifique-se que o caminho está correto
+const { protectRoute } = require('./middleware/authMiddleware'); 
 
 // --- 2. Inicialização da Aplicação ---
 const app = express();
@@ -47,6 +46,8 @@ app.use('/pedidos', orderRoutes);
 const separationRoutes = require('./routes/separationRoutes');
 app.use('/separacao', separationRoutes);
 
+const packingRoutes = require('./routes/packingRoutes');
+app.use('/empacotamento', packingRoutes);
 
 // --- Rota Raiz (Redireciona para o login) ---
 app.get('/', (req, res) => {

@@ -1,0 +1,11 @@
+{{! views/packing/label.hbs }}
+<div class="label-content">
+    <h1>Pedido</h1>
+    <p>{{numero_venda}}</p>
+</div>
+
+{{! Auto-imprime ao abrir }}
+<script>
+    window.print();
+    window.onafterprint = () => window.close();
+</script>

@@ -309,6 +309,71 @@ const MercadoLivreOrder = {
     return rows[0] || null;
   },
 
+  async getPackingQueueSummary() {
+    const query = {
+      text: `
+        WITH OrderItemCounts AS (
+            SELECT 
+              numero_venda, 
+              COUNT(id) AS item_count
+            FROM ${TABLE_NAME}
+            WHERE status_bucket = 'separado'
+            GROUP BY numero_venda
+        )
+        SELECT 
+          CASE WHEN item_count > 1 THEN 'kit' ELSE 'simple' END AS order_type,
+          COUNT(numero_venda) AS total_orders
+        FROM OrderItemCounts
+        GROUP BY order_type;
+      `,
+    };
+    const { rows } = await db.query(query.text);
+    return rows;
+  },
+
+  async findNextOrderToPack(orderType) {
+    const query = {
+      text: `
+        WITH OrderItemCounts AS (
+            SELECT 
+              numero_venda, 
+              COUNT(id) AS item_count, 
+              MIN(data_venda) as order_date
+            FROM ${TABLE_NAME}
+            WHERE status_bucket = 'separado'
+            GROUP BY numero_venda
+        )
+        SELECT oic.numero_venda
+        FROM OrderItemCounts oic
+        LEFT JOIN public.packing_locks pl ON oic.numero_venda = pl.numero_venda
+        WHERE pl.numero_venda IS NULL
+          AND oic.item_count ${orderType === 'kit' ? '> 1' : '= 1'}
+        ORDER BY oic.order_date ASC
+        LIMIT 1;
+      `,
+    };
+    const { rows } = await db.query(query.text);
+    return rows[0] || null;
+  },
+
+  async findHeaderByNumeroVenda(numeroVenda) {
+    const query = {
+      text: `
+        SELECT 
+          numero_venda,
+          MAX(comprador) as comprador,
+          MAX(data_venda) as data_venda,
+          SUM(unidades) as total_unidades
+        FROM ${TABLE_NAME}
+        WHERE numero_venda = $1
+        GROUP BY numero_venda;
+      `,
+      values: [numeroVenda]
+    };
+    const { rows } = await db.query(query.text, query.values);
+    return rows[0] || null;
+  },
+
   async bulkUpdateStatus(updates) {
     if (!updates || updates.length === 0) {
       return [];

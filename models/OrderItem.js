@@ -117,7 +117,28 @@ const OrderItem = {
     const { rows } = await db.query(query.text, query.values);
     return rows[0] || null;
   },
-
+  
+  async findAllByNumeroVenda(numeroVenda) {
+    const query = {
+      text: `
+        SELECT 
+          oi.produto_codigo,
+          oi.sku,
+          oi.descricao_produto,
+          oi.quantidade_total,
+          p.cod_fabrica
+        FROM ${TABLE_NAME} oi
+        JOIN public.mercado_livre_orders mlo ON oi.order_id = mlo.id
+        JOIN public.products p ON oi.produto_codigo = p.codigo
+        WHERE mlo.numero_venda = $1
+        ORDER BY oi.descricao_produto;
+      `,
+      values: [numeroVenda],
+    };
+    const { rows } = await db.query(query.text, query.values);
+    return rows;
+  },
+  
   async findOrderStatusByNumeroVenda(numeroVenda) {
     const query = {
       text: `
