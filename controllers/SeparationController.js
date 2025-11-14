@@ -102,14 +102,10 @@ const SeparationController = {
 
   async pickUnit(req, res) {
     try {
-      const produtoCodigo = Number.parseInt(req.body.produtoCodigo, 10);
-      if (!Number.isFinite(produtoCodigo)) {
-        return res.status(400).json({ message: 'Produto inválido.' });
-      }
-
+      // Modifique o 'ProductService.pickUnit' para NÃO enviar o produtoCodigo
       const result = await ProductService.pickUnit({
         userId: req.user.id,
-        produtoCodigo,
+        // produtoCodigo, // <--- REMOVA ESTA LINHA
         sku: req.body.sku
       });
 

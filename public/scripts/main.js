@@ -323,10 +323,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.className = 'card order-card';
 
                 const header = document.createElement('div');
+                header.style = 'flex-direction: column;'
                 header.className = 'card-header';
 
                 const title = document.createElement('h3');
-                title.textContent = `Pedido ${order.numero_venda || '-'}`;
+                title.textContent = `${order.numero_venda}`;
                 header.appendChild(title);
 
                 const chip = document.createElement('span');

@@ -59,9 +59,9 @@
                 {{#with (lookup groupedOrders initialBucket)}}
                     {{#each this}}
                         <article class="card order-card">
+                            <span class="order-chip">{{lookup @root.statusLabels status_bucket}}</span>
                             <div class="card-header">
-                                <h3>Pedido {{numero_venda}}</h3>
-                                <span class="order-chip">{{lookup @root.statusLabels status_bucket}}</span>
+                                <h3>{{numero_venda}}</h3>
                             </div>
                             <div class="card-body">
                                 <p><strong>Comprador:</strong> {{comprador}}</p>

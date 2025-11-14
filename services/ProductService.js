@@ -1,6 +1,3 @@
-// services/ProductService.js
-// Regras de negócio para produtos, importação e separação
-
 const fs = require('fs');
 const path = require('path');
 const XLSX = require('xlsx');
@@ -342,7 +339,7 @@ const ProductService = {
 
     // 2. Verifica se o utilizador JÁ TEM uma sessão válida NESTE departamento (Resolve Problema A)
     // **** ESTA É A LINHA CORRIGIDA ****
-    const existingAssignment = await this.getAssignmentForUser(userId, departmentCode);
+    const existingAssignment = await this.getCurrentSession(userId);
     
     if (existingAssignment) {
       // O utilizador já tem um lock. Apenas retorna-o.
@@ -394,12 +391,16 @@ const ProductService = {
     };
   },
 
-  async pickUnit({ userId, produtoCodigo, sku }) {
+  async pickUnit({ userId, sku }) { 
     const lock = await PickingLock.findByUser(userId);
-    if (!lock || lock.produto_codigo !== produtoCodigo) {
+
+    if (!lock) {
       throw new Error('Sessão de separação inválida para este utilizador.');
     }
 
+    // 2. Define o 'produtoCodigo' a partir do lock
+    const produtoCodigo = lock.produto_codigo;
+    
     const product = await Product.findByCodigo(produtoCodigo);
     if (!product) {
       await PickingLock.releaseByUser(userId);
@@ -407,13 +408,19 @@ const ProductService = {
     }
 
     if (sku) {
+      const normalizedSku = normalizeSku(sku);
       const expectedSku = normalizeSku(product.codigo);
-      if (normalizeSku(sku) !== expectedSku) {
+      
+      // MELHORIA BÓNUS: Verifique também o cod_fabrica
+      const expectedSkuFab = normalizeSku(product.cod_fabrica); 
+
+      if (normalizedSku !== expectedSku && normalizedSku !== expectedSkuFab) {
         throw new Error('SKU informado não corresponde ao produto atual.');
       }
     }
 
-    const allocation = await OrderItem.allocateUnit(produtoCodigo);
+    // O 'produtoCodigo' aqui está correto (veio do lock)
+    const allocation = await OrderItem.allocateUnit(produtoCodigo); 
     if (!allocation) {
       await PickingLock.releaseByUser(userId);
       return {
@@ -423,17 +430,35 @@ const ProductService = {
     }
 
     const pendentes = await OrderItem.countPendingUnitsByProduct(produtoCodigo);
-    const newMeta = Math.max(lock.quantidade_concluida + 1 + pendentes, lock.quantidade_meta);
-    const updatedLock = await PickingLock.updateProgress(produtoCodigo, 1, newMeta);
-
+    
+    // Atualiza o status do pedido no ML (sua lógica original)
     const allocationOrderId = Number(allocation.order_id);
     await ensureOrderStatusFor([allocationOrderId]);
 
-    return {
-      finished: pendentes === 0,
-      pendentes,
-      quantidadeConcluida: updatedLock?.quantidade_concluida ?? (lock.quantidade_concluida + 1)
-    };
+    if (pendentes === 0) {
+      // PRODUTO FINALIZADO!
+      // Libera o lock para que o acquireProduct possa buscar o próximo
+      await PickingLock.releaseByUser(userId);
+
+      return {
+        finished: true,
+        pendentes: 0,
+        // Retorna a quantidade concluída (a anterior + 1)
+        quantidadeConcluida: lock.quantidade_concluida + 1
+      };
+
+    } else {
+      // AINDA HÁ UNIDADES
+      // Apenas atualiza o progresso do lock
+      const newMeta = Math.max(lock.quantidade_concluida + 1 + pendentes, lock.quantidade_meta);
+      const updatedLock = await PickingLock.updateProgress(produtoCodigo, 1, newMeta);
+
+      return {
+        finished: false, // pendentes NÃO é 0
+        pendentes,
+        quantidadeConcluida: updatedLock?.quantidade_concluida ?? (lock.quantidade_concluida + 1)
+      };
+    }
   },
 
   async releaseSession(userId) {
