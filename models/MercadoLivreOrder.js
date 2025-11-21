@@ -410,7 +410,74 @@ const MercadoLivreOrder = {
 
     const { rows } = await db.query(query.text, query.values);
     return rows;
+  },
+
+  async findReadyForShipping(term) {
+      // 'term' pode ser o numero_venda ou simular NF
+      // Como não temos NF real, vamos buscar pelo numero_venda
+      const query = {
+          text: `
+              SELECT 
+                  numero_venda, 
+                  status_bucket,
+                  conferencia_saida,
+                  MAX(comprador) as comprador
+              FROM ${TABLE_NAME}
+              WHERE status_bucket = 'em_romaneio'
+                AND (numero_venda = $1 OR numero_venda LIKE '%' || $1 || '%')
+              GROUP BY numero_venda, status_bucket, conferencia_saida;
+          `,
+          values: [term]
+      };
+      const { rows } = await db.query(query.text, query.values);
+      return rows[0]; // Retorna o primeiro agrupamento encontrado
+  },
+
+  async markAsChecked(numeroVenda) {
+      const query = {
+          text: `
+              UPDATE ${TABLE_NAME}
+              SET conferencia_saida = true, updated_at = NOW()
+              WHERE numero_venda = $1 AND status_bucket = 'em_romaneio';
+          `,
+          values: [numeroVenda]
+      };
+      await db.query(query.text, query.values);
+      return true;
+  },
+
+  async getCheckedPendingOrders() {
+      const query = {
+          text: `
+              SELECT 
+                  numero_venda,
+                  MAX(comprador) as comprador,
+                  MAX(updated_at) as conferido_em
+              FROM ${TABLE_NAME}
+              WHERE status_bucket = 'em_romaneio' AND conferencia_saida = true
+              GROUP BY numero_venda
+              ORDER BY MAX(updated_at) DESC;
+          `
+      };
+      const { rows } = await db.query(query.text);
+      return rows;
+  },
+
+  async finalizeShippingBatch(batchId) {
+      const query = {
+          text: `
+              UPDATE ${TABLE_NAME}
+              SET status_bucket = 'enviado', 
+                  shipping_batch_id = $1,
+                  updated_at = NOW()
+              WHERE status_bucket = 'em_romaneio' AND conferencia_saida = true;
+          `,
+          values: [batchId]
+      };
+      const { rowCount } = await db.query(query.text, query.values);
+      return rowCount;
   }
+
 };
 
 module.exports = MercadoLivreOrder;

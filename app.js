@@ -49,6 +49,9 @@ app.use('/separacao', separationRoutes);
 const packingRoutes = require('./routes/packingRoutes');
 app.use('/empacotamento', packingRoutes);
 
+const shippingRoutes = require('./routes/shippingRoutes');
+app.use('/expedicao', shippingRoutes);
+
 // --- Rota Raiz (Redireciona para o login) ---
 app.get('/', (req, res) => {
     // Se o usuário já estiver logado (tem token), vai para o dashboard

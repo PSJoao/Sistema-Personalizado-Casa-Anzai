@@ -1,0 +1,83 @@
+<div class="page-header">
+    <div>
+        <h1>Expedição e Conferência</h1>
+        <p>Bipe o código do pedido ou nota fiscal para confirmar a saída.</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="/expedicao/romaneios" class="btn btn-outline">Histórico de Romaneios</a>
+    </div>
+</div>
+
+{{#if error}}
+    <div class="card">
+        <div class="card-body">
+            <div class="form-error">{{error}}</div>
+        </div>
+    </div>
+{{/if}}
+
+<section class="shipping-app">
+    <!-- Área de Bipagem -->
+    <div class="card">
+        <div class="card-body">
+            <form id="shipping-scan-form" class="separation-scan-form" autocomplete="off">
+                <label for="scan-input" class="sr-only">Bipar Pedido/NF</label>
+                <div class="scan-input-wrapper">
+                    <input type="text"
+                           id="scan-input"
+                           class="form-control"
+                           placeholder="Bipe o código do pedido ou NF..."
+                           autofocus
+                           autocomplete="off">
+                    <button type="submit" class="btn btn-primary">Conferir</button>
+                </div>
+            </form>
+            <div id="scan-feedback" class="scan-feedback" hidden></div>
+        </div>
+    </div>
+
+    <!-- Lista de Pedidos Conferidos (Na Mesa) -->
+    <div class="shipping-list-header">
+        <h3>Pedidos Conferidos (Aguardando Fechamento)</h3>
+        {{#if checkedOrders.length}}
+            <button id="finalize-batch-btn" class="btn btn-success">
+                Finalizar Envios ({{checkedOrders.length}})
+            </button>
+        {{else}}
+            <button id="finalize-batch-btn" class="btn btn-success" disabled>
+                Finalizar Envios
+            </button>
+        {{/if}}
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table" id="checked-orders-table">
+                <thead>
+                    <tr>
+                        <th>Pedido</th>
+                        <th>Comprador</th>
+                        <th>Conferido em</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each checkedOrders}}
+                        <tr>
+                            <td><strong>{{numero_venda}}</strong></td>
+                            <td>{{comprador}}</td>
+                            <td>{{formatDate conferido_em}}</td>
+                            <td><span class="badge badge-success">Conferido</span></td>
+                        </tr>
+                    {{else}}
+                        <tr id="empty-row">
+                            <td colspan="4" class="text-center muted">Nenhum pedido conferido nesta sessão ainda.</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script src="/scripts/shipping.js"></script>

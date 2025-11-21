@@ -1,0 +1,77 @@
+<div class="a4-page">
+    <header class="pdf-header">
+        <div class="pdf-logo">
+            <img src="/images/logo-anzai-desktop.png" alt="Casa Anzai">
+        </div>
+        <div class="pdf-info">
+            <h1>Romaneio de Expedição</h1>
+            <p><strong>Lote:</strong> {{batch.batch_number}}</p>
+            <p><strong>Data:</strong> {{formatDate batch.created_at}}</p>
+            <p><strong>Responsável:</strong> {{batch.responsavel}}</p>
+        </div>
+    </header>
+
+    <table class="pdf-table">
+        <thead>
+            <tr>
+                <th style="width: 15%">Pedido</th>
+                <th style="width: 20%">Comprador</th>
+                <th style="width: 40%">Produtos (Resumo)</th>
+                <th style="width: 10%">Qtd.</th>
+                <th style="width: 15%">Canal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each batch.orders}}
+                <tr>
+                    <td><strong>{{numero_venda}}</strong></td>
+                    <td>{{comprador}}</td>
+                    <td class="product-cell">{{produtos}}</td>
+                    <td class="text-center">{{total_unidades}}</td>
+                    <td>{{platformLabel plataforma}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-right"><strong>Total de Pedidos:</strong></td>
+                <td class="text-center"><strong>{{length batch.orders}}</strong></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <footer class="pdf-footer">
+        <p>Relatório gerado pelo Sistema Casa Anzai em {{formatDate now}}.</p>
+        <div class="signature-box">
+            <p>Assinatura do Transportador</p>
+        </div>
+    </footer>
+</div>
+
+<style>
+    /* Estilos específicos para impressão A4 */
+    @page { size: A4; margin: 20mm; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
+    .a4-page { width: 100%; max-width: 210mm; margin: 0 auto; }
+    
+    .pdf-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+    .pdf-logo img { max-height: 60px; }
+    .pdf-info { text-align: right; }
+    .pdf-info h1 { margin: 0 0 10px 0; font-size: 18pt; color: #003366; }
+    .pdf-info p { margin: 2px 0; font-size: 10pt; }
+
+    .pdf-table { width: 100%; border-collapse: collapse; font-size: 10pt; }
+    .pdf-table th { background-color: #f8f9fa; border-bottom: 2px solid #dee2e6; padding: 10px; text-align: left; font-weight: 600; }
+    .pdf-table td { border-bottom: 1px solid #dee2e6; padding: 8px 10px; vertical-align: top; }
+    .product-cell { font-size: 9pt; color: #555; }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+
+    .pdf-footer { margin-top: 50px; font-size: 9pt; color: #777; display: flex; justify-content: space-between; align-items: flex-end; }
+    .signature-box { border-top: 1px solid #333; width: 200px; text-align: center; padding-top: 5px; }
+</style>
+
+<script>
+    window.print();
+</script>
