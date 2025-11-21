@@ -64,6 +64,17 @@ const helpers = {
         return platformLabels[platformKey] || platformKey;
     },
 
+    sum: (collection, field) => {
+        if (!Array.isArray(collection)) {
+            return 0;
+        }
+        
+        return collection.reduce((total, item) => {
+            const value = Number(item[field]) || 0;
+            return total + value;
+        }, 0);
+    },
+
     json: (context) => {
         try {
             return JSON.stringify(context ?? {});

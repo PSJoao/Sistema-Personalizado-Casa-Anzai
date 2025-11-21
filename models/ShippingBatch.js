@@ -60,11 +60,10 @@ const ShippingBatch = {
         text: `
             SELECT 
                 numero_venda,
-                MAX(comprador) as comprador,
                 STRING_AGG(titulo_anuncio, ' | ') as produtos,
                 SUM(unidades) as total_unidades,
                 MAX(plataforma) as plataforma,
-                MAX(total) as valor_total
+                SUM(total) as valor_total
             FROM public.mercado_livre_orders
             WHERE shipping_batch_id = $1
             GROUP BY numero_venda

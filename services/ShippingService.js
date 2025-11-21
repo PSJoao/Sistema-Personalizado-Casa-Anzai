@@ -14,26 +14,35 @@ const ShippingService = {
   },
 
   // Marca um pedido como conferido
-  async checkOrder(numeroVenda) {
+  async checkOrder(term) {
     // Verifica se o pedido existe e está pronto
-    const order = await MercadoLivreOrder.findReadyForShipping(numeroVenda);
+    const order = await MercadoLivreOrder.findReadyForShipping(term);
     
     if (!order) {
-      throw new Error('Pedido não encontrado na lista de expedição ou já enviado.');
+      throw new Error(`Pedido "${term}" não encontrado na lista de expedição. Verifique se o código está correto ou se o pedido já foi enviado.`);
     }
 
     if (order.conferencia_saida) {
-      throw new Error('Este pedido já foi conferido.');
+      throw new Error(`O pedido "${order.numero_venda}" já foi conferido anteriormente.`);
     }
 
     // Marca como conferido
-    await MercadoLivreOrder.markAsChecked(numeroVenda);
+    await MercadoLivreOrder.markAsChecked(order.numero_venda);
+    
+    // Busca o pedido atualizado para obter a data de conferimento
+    const updatedOrder = await MercadoLivreOrder.getCheckedOrderInfo(order.numero_venda);
     
     return { 
       success: true, 
-      numero_venda: numeroVenda,
-      comprador: order.comprador 
+      numero_venda: order.numero_venda,
+      comprador: order.comprador,
+      conferido_em: updatedOrder ? updatedOrder.conferido_em : new Date().toISOString()
     };
+  },
+
+  // Retorna a lista de pedidos pendentes para expedição (ainda não conferidos)
+  async getPendingOrdersForShipping() {
+    return await MercadoLivreOrder.getPendingOrdersForShipping();
   },
 
   // Retorna a lista de pedidos conferidos que aguardam finalização do lote

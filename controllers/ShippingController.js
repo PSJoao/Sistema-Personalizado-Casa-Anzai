@@ -6,12 +6,15 @@ const ShippingController = {
   // Renderiza a página principal de conferência
   async renderShippingPage(req, res) {
     try {
+      // Busca a lista de pedidos pendentes para expedição (ainda não conferidos)
+      const pendingOrders = await ShippingService.getPendingOrdersForShipping();
       // Busca a lista de pedidos já conferidos que estão "na mesa" esperando finalizar
       const checkedOrders = await ShippingService.getPendingCheckedOrders();
       
       res.render('shipping/index', {
         user: req.user,
         activePage: 'expedicao',
+        pendingOrders,
         checkedOrders
       });
     } catch (error) {
@@ -19,6 +22,7 @@ const ShippingController = {
       res.render('shipping/index', {
         user: req.user,
         activePage: 'expedicao',
+        pendingOrders: [],
         checkedOrders: [],
         error: 'Erro ao carregar dados da expedição.'
       });

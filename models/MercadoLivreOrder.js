@@ -446,6 +446,40 @@ const MercadoLivreOrder = {
       return true;
   },
 
+  async getCheckedOrderInfo(numeroVenda) {
+      const query = {
+          text: `
+              SELECT 
+                  numero_venda,
+                  MAX(comprador) as comprador,
+                  MAX(updated_at) as conferido_em
+              FROM ${TABLE_NAME}
+              WHERE numero_venda = $1 AND status_bucket = 'em_romaneio' AND conferencia_saida = true
+              GROUP BY numero_venda;
+          `,
+          values: [numeroVenda]
+      };
+      const { rows } = await db.query(query.text, query.values);
+      return rows[0] || null;
+  },
+
+  async getPendingOrdersForShipping() {
+      const query = {
+          text: `
+              SELECT 
+                  numero_venda,
+                  MAX(comprador) as comprador,
+                  MAX(updated_at) as updated_at
+              FROM ${TABLE_NAME}
+              WHERE status_bucket = 'em_romaneio' AND conferencia_saida = false
+              GROUP BY numero_venda
+              ORDER BY MAX(updated_at) DESC;
+          `
+      };
+      const { rows } = await db.query(query.text);
+      return rows;
+  },
+
   async getCheckedPendingOrders() {
       const query = {
           text: `
