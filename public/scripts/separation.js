@@ -73,7 +73,7 @@
         content.querySelector('[data-product-sku]').textContent = product ? product.codigo : '—';
         content.querySelector('[data-department]').textContent = departmentName;
         content.querySelector('[data-remaining]').textContent = remaining;
-        content.querySelector('[data-unit]').textContent = product?.unidade ? product.unidade.toLowerCase() : 'un';
+        content.querySelector('[data-unit]').textContent = 'un';
 
         const form = content.querySelector('[data-scan-form]');
         const input = content.querySelector('[data-scan-input]');
